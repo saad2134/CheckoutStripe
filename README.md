@@ -96,7 +96,10 @@ Start a local PHP server:
 # Check required extensions
 php -m | findstr "pdo_mysql curl"
 
-# If DLLs exist but not loaded, use with full paths:
+# Windows (find DLL paths first)
+php -r "echo PHP_EXTENSION_DIR;"
+
+# Windows (if DLLs exist but not loaded globally)
 php -d "extension=C:\Users\UwU\AppData\Local\Programs\PHP\8.5.6\ts\x64\ext\php_pdo_mysql.dll" -d "extension=C:\Users\UwU\AppData\Local\Programs\PHP\8.5.6\ts\x64\ext\php_curl.dll" -S localhost:8000
 
 # Windows (if both are already loaded globally)

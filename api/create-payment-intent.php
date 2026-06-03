@@ -31,7 +31,10 @@ try {
     $amount = isset($input['amount']) ? floatval($input['amount']) : 0;
     $currency = isset($input['currency']) ? strtolower($input['currency']) : STRIPE_CURRENCY;
     $productId = isset($input['productId']) ? intval($input['productId']) : null;
+    $productName = isset($input['productName']) ? trim($input['productName']) : '';
     $quantity = isset($input['quantity']) ? intval($input['quantity']) : 1;
+    $customerName = isset($input['customer_name']) ? trim($input['customer_name']) : '';
+    $customerCountry = isset($input['customer_country']) ? trim($input['customer_country']) : 'US';
     
     if ($amount <= 0) {
         jsonError('Invalid amount');
@@ -39,8 +42,19 @@ try {
     
     $amountCents = intval($amount * 100);
     
-    $caCert = __DIR__ . '/../cacert.pem';
-
+    $stripeParams = [
+        'amount' => $amountCents,
+        'currency' => $currency,
+        'automatic_payment_methods[enabled]' => 'true',
+        'description' => $productName ? "Purchase: $productName" : 'Online purchase',
+        'shipping[name]' => $customerName ?: 'Customer',
+        'shipping[address][line1]' => 'Address',
+        'shipping[address][city]' => 'City',
+        'shipping[address][country]' => $customerCountry,
+        'metadata[product_id]' => $productId,
+        'metadata[quantity]' => $quantity
+    ];
+    
     $ch = curl_init();
     curl_setopt_array($ch, [
         CURLOPT_URL => "https://api.stripe.com/v1/payment_intents",
@@ -49,16 +63,16 @@ try {
         CURLOPT_HTTPHEADER => [
             'Content-Type: application/x-www-form-urlencoded'
         ],
-        CURLOPT_CAINFO => file_exists($caCert) ? $caCert : null,
         CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => http_build_query([
-            'amount' => $amountCents,
-            'currency' => $currency,
-            'automatic_payment_methods[enabled]' => 'true',
-            'metadata[product_id]' => $productId,
-            'metadata[quantity]' => $quantity
-        ])
+        CURLOPT_POSTFIELDS => http_build_query($stripeParams)
     ]);
+    
+    $caCert = __DIR__ . '/../cacert.pem';
+    if (file_exists($caCert)) {
+        curl_setopt($ch, CURLOPT_CAINFO, $caCert);
+    } else {
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    }
     
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);

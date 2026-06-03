@@ -90,6 +90,23 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="form-label" for="customer-country">Country</label>
+                                <select id="customer-country" class="form-input" required>
+                                    <option value="">Select country</option>
+                                    <option value="IN">India</option>
+                                    <option value="US" selected>United States</option>
+                                    <option value="GB">United Kingdom</option>
+                                    <option value="CA">Canada</option>
+                                    <option value="AU">Australia</option>
+                                    <option value="DE">Germany</option>
+                                    <option value="FR">France</option>
+                                    <option value="JP">Japan</option>
+                                    <option value="SG">Singapore</option>
+                                    <option value="AE">UAE</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="form-label">Card Information</label>
                                 <div class="card-element-container" id="card-container">
                                     <div class="card-loading" id="card-loading">

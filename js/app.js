@@ -10,38 +10,6 @@ let products = [];
 let orderData = null;
 let currentTheme = 'system';
 
-function getStripeAppearance(theme) {
-    const isLight = theme === 'light';
-    return {
-        theme: isLight ? 'stripe' : 'night',
-        variables: {
-            colorPrimary: '#22c55e',
-            colorBackground: isLight ? '#ffffff' : '#09090b',
-            colorText: isLight ? '#09090b' : '#fafafa',
-            colorTextSecondary: isLight ? '#71717a' : '#a1a1aa',
-            colorTextPlaceholder: isLight ? '#a1a1aa' : '#71717a',
-            colorDanger: '#ef4444',
-            fontFamily: 'Inter, system-ui, sans-serif',
-            borderRadius: '6px',
-            spacingUnit: '4px'
-        },
-        rules: {
-            '.Input': {
-                border: isLight ? '1px solid #e4e4e7' : '1px solid #27272a',
-                backgroundColor: isLight ? '#ffffff' : '#09090b'
-            },
-            '.Input:focus': {
-                border: '1px solid #22c55e',
-                boxShadow: isLight ? '0 0 0 3px rgba(34, 197, 94, 0.2)' : '0 0 0 3px rgba(34, 197, 94, 0.3)'
-            },
-            '.Label': {
-                fontWeight: '500',
-                marginBottom: '6px'
-            }
-        }
-    };
-}
-
 function getResolvedTheme() {
     const stored = localStorage.getItem('theme') || 'system';
     if (stored === 'system') {
@@ -249,6 +217,7 @@ function updateSummary() {
 function validateForm() {
     const name = document.getElementById('customer-name');
     const email = document.getElementById('customer-email');
+    const country = document.getElementById('customer-country');
 
     let isValid = true;
 
@@ -267,6 +236,13 @@ function validateForm() {
         isValid = false;
     } else {
         clearFieldError(email);
+    }
+
+    if (!country.value) {
+        showFieldError(country, 'Country is required');
+        isValid = false;
+    } else {
+        clearFieldError(country);
     }
 
     return isValid && selectedProduct !== null;
@@ -310,6 +286,9 @@ async function handlePayment(e) {
         hideError();
 
         const amount = parseFloat(selectedProduct.price);
+        const customerName = document.getElementById('customer-name').value.trim();
+        const customerEmail = document.getElementById('customer-email').value.trim();
+        const customerCountry = document.getElementById('customer-country').value;
 
         const intentResponse = await fetch('api/create-payment-intent.php', {
             method: 'POST',
@@ -318,7 +297,11 @@ async function handlePayment(e) {
                 amount: amount,
                 currency: 'usd',
                 productId: selectedProduct.id,
-                quantity: 1
+                productName: selectedProduct.name,
+                quantity: 1,
+                customer_name: customerName,
+                customer_email: customerEmail,
+                customer_country: customerCountry
             })
         });
 
@@ -483,12 +466,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const customerName = document.getElementById('customer-name');
     const customerEmail = document.getElementById('customer-email');
+    const customerCountry = document.getElementById('customer-country');
 
     if (customerName) {
         customerName.addEventListener('input', () => clearFieldError(customerName));
     }
     if (customerEmail) {
         customerEmail.addEventListener('input', () => clearFieldError(customerEmail));
+    }
+    if (customerCountry) {
+        customerCountry.addEventListener('change', () => clearFieldError(customerCountry));
     }
 });
 

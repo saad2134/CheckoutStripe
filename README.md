@@ -48,6 +48,8 @@ CheckoutStripe/
 
 ### Step 1: Database Setup
 
+Start MySQL server on local host.
+
 Create a MySQL database:
 
 ```sql

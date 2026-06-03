@@ -7,8 +7,8 @@ define('DB_PASS', 'root');
 
 // Stripe Configuration
 // Using test keys - replace with your own in production
-define('STRIPE_SECRET_KEY', 'sk_test_your_stripe_secret_key');
-define('STRIPE_PUBLISHABLE_KEY', 'pk_test_your_stripe_publishable_key');
+define('STRIPE_SECRET_KEY', 'sk_test_51PMsbBSGwnoanoO21AbxfxX0f6nEnf8d60xLUSYOnX4t3rGX5BFeCdoAB5BeX3aUJe8Sjynh4JFgCBuRdkur8rDR00z73TZR0j');
+define('STRIPE_PUBLISHABLE_KEY', 'pk_test_51PMsbBSGwnoanoO21mJgf7U4tIJ0jPsJ0VwWrXPlrJys45Zahd9sjgL0opSa0l0wziNmn6StY2OjU02RNGMcYZzW007unsBJep');
 define('STRIPE_WEBHOOK_SECRET', 'whsec_your_webhook_secret');
 
 define('STRIPE_CURRENCY', 'usd');

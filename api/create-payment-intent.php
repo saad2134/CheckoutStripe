@@ -17,6 +17,10 @@ function jsonError($message, $code = 400) {
     exit;
 }
 
+if (!function_exists('curl_init')) {
+    jsonError('cURL extension is not enabled. Add -d extension=php_curl.dll to your PHP command');
+}
+
 try {
     $input = json_decode(file_get_contents('php://input'), true);
     
@@ -35,6 +39,8 @@ try {
     
     $amountCents = intval($amount * 100);
     
+    $caCert = __DIR__ . '/../cacert.pem';
+
     $ch = curl_init();
     curl_setopt_array($ch, [
         CURLOPT_URL => "https://api.stripe.com/v1/payment_intents",
@@ -43,6 +49,7 @@ try {
         CURLOPT_HTTPHEADER => [
             'Content-Type: application/x-www-form-urlencoded'
         ],
+        CURLOPT_CAINFO => file_exists($caCert) ? $caCert : null,
         CURLOPT_POST => true,
         CURLOPT_POSTFIELDS => http_build_query([
             'amount' => $amountCents,

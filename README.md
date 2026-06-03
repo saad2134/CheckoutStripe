@@ -93,7 +93,13 @@ define('DB_PASS', 'your_password'); // your password
 Start a local PHP server:
 
 ```bash
-# Windows
+# Check required extensions
+php -m | findstr "pdo_mysql curl"
+
+# If DLLs exist but not loaded, use with full paths:
+php -d "extension=C:\Users\UwU\AppData\Local\Programs\PHP\8.5.6\ts\x64\ext\php_pdo_mysql.dll" -d "extension=C:\Users\UwU\AppData\Local\Programs\PHP\8.5.6\ts\x64\ext\php_curl.dll" -S localhost:8000
+
+# Windows (if both are already loaded globally)
 php -S localhost:8000
 
 # Linux/macOS  
@@ -193,6 +199,20 @@ Check MySQL is running and credentials are correct in config.php.
 - Verify Stripe test keys are correctly set
 - Check Stripe Dashboard for error logs
 - Ensure cURL extension is enabled: `php -m | grep curl`
+
+### "Could not find driver"
+
+The PHP `pdo_mysql` extension is not enabled. Run `php -m | findstr pdo` to check.  
+Workaround without editing `php.ini`:
+
+```bash
+php -d extension=php_pdo.dll -d extension=php_pdo_mysql.dll -S localhost:8000
+```
+
+### "Failed to initialize payment system"
+
+You must set your own Stripe publishable key in `js/app.js` (line 4).  
+Get free test keys at https://dashboard.stripe.com/test/apikeys
 
 ### "Card element not loading"
 
